@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+/**
+ * Test
+ */
 @Slf4j
 @RestController
 @RequestMapping("/goods")
