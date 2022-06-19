@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.metadata.train.sys.mapper.PermissionMapper">
+    <select id="getPermissionByRole" resultType="com.metadata.train.entity.sys.Permission">
+        select p.* from db_role_permission rp
+        left join db_permission p on rp.permission_id = p.id
+        where rp.role_id in
+        <foreach collection='params' open='(' close=')' separator=',' item='item'>
+            #{item.id}
+        </foreach>
+    </select>
+    <select id="getUrlAndPermissionAll" resultType="java.util.Map">
+        select p.url as url, GROUP_CONCAT(r.name) as roles from db_role_permission rp
+        left join db_permission p on rp.permission_id = p.id
+        left join db_role r on rp.role_id = r.id
+        where p.url is not null and p.url != ''
+        group by p.url
+    </select>
+    <select id="getMenuList" resultType="com.metadata.train.entity.sys.Permission">
+        select p.* from db_permission p
+        left join db_role_permission rp on p.id = rp.permission_id
+        left join db_user_role ur on rp.role_id = ur.role_id
+        left join db_user u on u.id = ur.user_id
+        where u.id = #{param}
+    </select>
+</mapper>

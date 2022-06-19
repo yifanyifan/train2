@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: train-gateway
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        server-addr: 60.205.176.169:8848
+        namespace: 533c1a9d-c485-465f-8f4b-945e753aca08
+        file-extension: yaml
+        shared-configs:
+         - train-redis.yaml
+      discovery:
+        server-addr: 60.205.176.169:8848
+        namespace: 533c1a9d-c485-465f-8f4b-945e753aca08
+        metadata:
+          management:
+            context-path: ${server.servlet.context-path}/actuator
+    gateway:
+      routes:
+        - id: train-auth
+          uri: lb://train-auth
+          predicates[0]: Path=/auth/**
+          #filters[0]: StripPrefix=1
+        - id: train-sys
+          uri: lb://train-sys
+          predicates[0]: Path=/sys/**
+          #filters[0]: StripPrefix=1
+      httpclient:
+        connectTimeout: 30000
+        responseTimeout: 35000
+      discovery:
+        locator:
+          enabled: true #开启从注册中心动态创建路由的功能
+          lower-case-service-id: true #使用小写服务名，默认是大写
+      loadbalancer:
+        use404: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: 'http://localhost:18888/auth/rsa/publicKey' #配置RSA的公钥访问地址
+secure:
+  ignore:
+    urls: #配置白名单路径
+      - "/actuator/**"
+      - "/auth/oauth/token"
+      - "/auth/rsa/publicKey"
+      - "/sys/sso/login"
+      - "/sys/studentRegistry/add"

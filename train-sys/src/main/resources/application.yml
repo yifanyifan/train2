@@ -1,0 +1,7 @@
+server:
+  port: 18881
+  servlet:
+    context-path: /sys
+
+logging:
+  config: classpath:logback-spring.xml
